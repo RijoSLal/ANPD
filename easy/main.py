@@ -5,6 +5,8 @@ import easyocr
 import pandas as pd 
 import datetime
 
+
+db=pd.DataFrame(columns=["TIME","NUMBER"])
 capture = cv2.VideoCapture(0)
 reader = easyocr.Reader(['en'])
 
@@ -48,7 +50,13 @@ while capture.isOpened():
          
             result = reader.readtext(img)
             if result:
-                print(result)
+                date=str(datetime.datetime.now())
+                string=""
+                for i in result:
+                    string+=str(i[1])
+                print(string)
+                data=pd.DataFrame(data={"TIME":[date],"NUMBER":[string]})
+                db=pd.concat([db,data],axis=0)
             else:
                 print("No text detected.")
 
@@ -65,5 +73,6 @@ while capture.isOpened():
         break
 
 
+db.to_csv("db.csv")
 capture.release()
 cv2.destroyAllWindows()
